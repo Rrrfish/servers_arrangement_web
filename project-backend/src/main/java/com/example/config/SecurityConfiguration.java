@@ -1,16 +1,22 @@
 package com.example.config;
 
 import com.example.entity.RestBean;
+import com.example.entity.dto.Account;
 import com.example.entity.vo.response.AuthorizeVO;
 import com.example.filter.JWTAuthorizeFilter;
+import com.example.service.AccountService;
+import com.example.service.Impl.AccountServiceImpl;
 import com.example.utils.JwtUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Configuration
 public class SecurityConfiguration {
@@ -29,6 +36,12 @@ public class SecurityConfiguration {
 
     @Resource
     JWTAuthorizeFilter jwtAuthorizeFilter;
+    //@Qualifier("enableGlobalAuthenticationAutowiredConfigurer")
+    @Autowired
+    private GlobalAuthenticationConfigurerAdapter enableGlobalAuthenticationAutowiredConfigurer;
+
+    @Resource
+    AccountService service = new AccountServiceImpl();
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,8 +53,8 @@ public class SecurityConfiguration {
                 })
                 .formLogin(conf -> {
                     conf.loginProcessingUrl("/api/auth/login")
-                            .usernameParameter("username")
-                            .passwordParameter("password")
+//                            .usernameParameter("username")
+//                            .passwordParameter("password")
                             .successHandler(this::onAuthenticationSuccess)
                             .failureHandler(this::onAuthenticationFailure);
                 })
@@ -78,8 +91,14 @@ public class SecurityConfiguration {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         response.setHeader("Content-Type", "text/html;charset=UTF-8");
+        PrintWriter writer = response.getWriter();
+        String authHeader = request.getHeader("Authorization");
+        if(utils.doInvalid(authHeader)) {
+            writer.write(RestBean.success().toJSONString());
+        } else {
+            writer.write(RestBean.fail(401, "退出失敗").toJSONString());
+        }
 
-        response.getWriter().write("退出成功！");
     }
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
@@ -92,10 +111,12 @@ public class SecurityConfiguration {
         response.setHeader("Content-Type", "text/html;charset=UTF-8");
         User principal = (User)authentication.getPrincipal();
 
-        String token = utils.generateToken(principal, 1, "goodUser");
+        String token = utils.generateToken(principal, 1, "user");
+        Account account = service.findAccountByUsernameOrEmail(principal.getUsername());
+
         AuthorizeVO  vo = new AuthorizeVO();
-        vo.setUsername(principal.getUsername());
-        vo.setRole("ROLE_ADMIN");
+        vo.setUsername(account.getUsername());
+        vo.setRole(account.getRole());
         vo.setToken(token);
         vo.setExpire(utils.expireTime());
         response.getWriter().write(RestBean.success(vo).toJSONString());
