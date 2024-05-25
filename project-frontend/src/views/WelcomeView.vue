@@ -5,6 +5,8 @@
 <template>
   <div style="width: 100vw; height: 100vh; overflow: hidden; display: flex">
     <div style="flex: 1" >
+      <el-image style="width: 100%;height: 100%" fit="cover"
+                src="https://w.wallhaven.cc/full/r7/wallhaven-r7vxk1.jpg"/>
 
     </div>
     <div class = "right-card">
@@ -19,8 +21,8 @@
 
 <style scoped>
 .right-card {
+  width: 450px;
   z-index: 1;
-  background-color: #ffffff;
-  width: 500px;
+  background-color: var(--el-bg-color);
 }
 </style>
