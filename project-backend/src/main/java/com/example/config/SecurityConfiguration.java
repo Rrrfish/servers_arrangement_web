@@ -4,6 +4,7 @@ import com.example.entity.RestBean;
 import com.example.entity.dto.Account;
 import com.example.entity.vo.response.AuthorizeVO;
 import com.example.filter.JWTAuthorizeFilter;
+import com.example.filter.MyCorsFilter;
 import com.example.service.AccountService;
 import com.example.service.Impl.AccountServiceImpl;
 import com.example.utils.JwtUtils;
@@ -12,7 +13,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -41,7 +41,11 @@ public class SecurityConfiguration {
     private GlobalAuthenticationConfigurerAdapter enableGlobalAuthenticationAutowiredConfigurer;
 
     @Resource
+    MyCorsFilter myCorsFilter;
+
+    @Resource
     AccountService service = new AccountServiceImpl();
+
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -111,8 +115,8 @@ public class SecurityConfiguration {
         response.setHeader("Content-Type", "text/html;charset=UTF-8");
         User principal = (User)authentication.getPrincipal();
 
-        String token = utils.generateToken(principal, 1, "user");
         Account account = service.findAccountByUsernameOrEmail(principal.getUsername());
+        String token = utils.generateToken(principal, 1, account.getUsername());
 
         AuthorizeVO  vo = new AuthorizeVO();
         vo.setUsername(account.getUsername());

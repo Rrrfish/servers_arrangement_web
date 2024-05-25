@@ -15,11 +15,18 @@
 	<description>project-backend</description>
 	<properties>
 		<java.version>22</java.version>
+<!--		<org.mybatis.version>3.5.14</org.mybatis.version>-->
+<!--		<org.mybatis.starter.version>3.0.3</org.mybatis.starter.version>-->
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>3.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -53,7 +60,7 @@
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>3.5.3</version>
+			<version>3.5.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

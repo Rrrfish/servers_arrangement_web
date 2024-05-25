@@ -14,10 +14,10 @@ import java.util.List;
 @Configuration
 @MapperScan("com.example.mapper")
 public class WebConfiguration implements WebMvcConfigurer {
-    @Bean
-    public DdlApplicationRunner ddlApplicationRunner(@Autowired(required = false) List ddlList) {
-        return new DdlApplicationRunner(ddlList);
-    }
+//    @Bean
+//    public DdlApplicationRunner ddlApplicationRunner(@Autowired(required = false) List ddlList) {
+//        return new DdlApplicationRunner(ddlList);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){

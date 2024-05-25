@@ -8,3 +8,5 @@ spring:
     jwt:
       key: 'ababssxxzyzybaba'
       expire: 3
+    filter:
+      order: -100
