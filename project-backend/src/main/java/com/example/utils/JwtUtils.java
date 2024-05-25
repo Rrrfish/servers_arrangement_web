@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -31,16 +32,24 @@ public class JwtUtils {
     @Resource
     StringRedisTemplate stringRedisTemplate;
 
-    public boolean doInvalid(String token) { //讓jwt token失效
-        token = truncToken(token);
-        if(token == null) {return false;}
+    public boolean doInvalid(String headToken) { //讓jwt token失效
+        System.out.println("token is ? " + headToken);
+        String token = truncToken(headToken);
+        System.out.println("处理之后token为" + token);
+        if(token == null) {
+            return false;
+        }
         Algorithm algorithm = Algorithm.HMAC256(key);
         JWTVerifier verifier = JWT.require(algorithm).build(); //decode
+        System.out.println("jwrVerifier is " + verifier);
         try {
             DecodedJWT jwt = verifier.verify(token);
-            String id = jwt.getClaim("id").asString();
+            String id = jwt.getId();
+            System.out.println("decode之后的id is " + id);
             return deleteToken(id, jwt.getExpiresAt());
         } catch (JWTVerificationException e) {
+            System.out.println("出现了JWTVerificationException");
+            e.printStackTrace(); // 打印堆栈跟踪以获取更多信息
             return false;
         }
     }
@@ -51,12 +60,12 @@ public class JwtUtils {
 
     public boolean deleteToken(String id, Date date) {
         if( this.isInvalid(id) ) {return false;}
-        else {
-            Date now = new Date();
-            long expire =  Math.max(0, date.getTime() - now.getTime());
-            stringRedisTemplate.opsForValue().set(Config.JWT_BLACKLIST + id, "", expire, TimeUnit.MILLISECONDS);
-            return true;
-        }
+
+        Date now = new Date();
+        long expire =  Math.max(0, date.getTime() - now.getTime());
+        stringRedisTemplate.opsForValue().set(Config.JWT_BLACKLIST + id, "", expire, TimeUnit.MILLISECONDS);
+        return true;
+
     }
 
     public Date expireTime() {
@@ -101,7 +110,12 @@ public class JwtUtils {
     }
 
     private String truncToken(String token) {
-        if(token == null || !token.startsWith("Bearer ")) return null;
+
+        if(token == null || !token.startsWith("Bearer ")) {
+            System.out.println("token is null or err");
+            if(token!=null && !token.startsWith("Bearer ")) System.out.println("不是Bearer开头！");
+            return null;
+        }
         return token.substring(7);
     }
 
@@ -110,11 +124,11 @@ public class JwtUtils {
         return JWT.create()
                 .withJWTId(UUID.randomUUID().toString()) //利用id比較好查詢
                 .withClaim("id", id)
-                .withClaim("username", username)
+                .withClaim("name", username)
                 .withClaim("authorities", details.getAuthorities()
                         .stream()
                         .map(GrantedAuthority::getAuthority).toList())
-                .withExpiresAt(new Date(System.currentTimeMillis() + expire*24))
+                .withExpiresAt(expireTime())
                 .withIssuedAt(new Date())  //start time
                 .sign(algorithm); // 加密
     }

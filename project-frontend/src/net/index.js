@@ -1,83 +1,4 @@
-// import axios from 'axios'
-// import {ElMessage} from "element-plus";
-// const authItemName = "authorize"
-//
-// const defaultFailure = (message, code, url) => {
-//     console.warn(`请求地址: $\{url}, 状态码: $\{url}, 错误信息: ${message}`)
-//     ElMessage.warning(`出问题了！${message}`)
-// }
-// const defaultError = (err) => {
-//     console.warn(err)
-//     ElMessage.warning(`有错误！${err}`)
-// }
-//
-// function login(username, password, remember, failure, success ) {
-//     internalPost("/api/auth/login", {
-//         username: username,
-//         password: password,
-//     }, {
-//         'Content-Type': 'application/x-www-form-urlencoded'
-//     },
-//     (data) => {
-//         storeAccessToken(remember,data.token, data.expire)
-//         ElMessage.success(`登陆成功！ ${data.username}`)
-//         success(data.data)
-//
-//     }, failure)
-// }
-//
-// function internalPost(url, data, header, success, failure, error= defaultError)  {
-//     axios.post(url, data, {headers:header}).then(({data}) => {
-//         if(data.code === 200) {
-//             success(data.data)
-//         } else {
-//             failure(data.message, data.code, url)
-//         }
-//     }).catch( err => error(err))
-// }
-//
-// function internalGet(url,header, success, failure, error= defaultError)  {
-//     axios.get(url, {headers:header}).then(({data}) => {
-//         if(data.code === 200) {
-//             success(data.data)
-//         } else {
-//             failure(data.message, data.code, url)
-//         }
-//     }).catch( err => error(err))
-// }
-//
-//
-//
-// function takeAccessToken() {
-//     const str = localStorage.getItem(authItemName) || sessionStorage.getItem(authItemName);
-//     if(!str) return null
-//     const authObj = JSON.parse(str)
-//     if(new Date(authObj.expire) <= new Date()) {
-//         deleteAccessToken()
-//         ElMessage.warning("登录状态已过期，请重新登录！")
-//         return null
-//     }
-//     return authObj.token
-// }
-//
-// function storeAccessToken(remember, token, expire){
-//     const authObj = {
-//         token: token,
-//         expire: expire
-//     }
-//     const str = JSON.stringify(authObj)
-//     if(remember)
-//         localStorage.setItem(authItemName, str)
-//     else
-//         sessionStorage.setItem(authItemName, str)
-// }
-//
-// function deleteAccessToken() {
-//     localStorage.removeItem(authItemName)
-//     sessionStorage.removeItem(authItemName)
-// }
-//
-// export {login}
+
 
 import axios from "axios";
 import {ElMessage} from "element-plus";
@@ -102,6 +23,7 @@ const defaultFailure = (message, status, url) => {
 
 function takeAccessToken() {
     const str = localStorage.getItem(authItemName) || sessionStorage.getItem(authItemName);
+    console.warn(str)
     if(!str) return null
     const authObj = JSON.parse(str)
     if(new Date(authObj.expire) <= new Date()) {
@@ -112,12 +34,14 @@ function takeAccessToken() {
     return authObj.token
 }
 
-function storeAccessToken(remember, token, expire){
+function storeAccessToken(token,remember,  expire){
     const authObj = {
         token: token,
         expire: expire
     }
     const str = JSON.stringify(authObj)
+    console.warn("要保存的token")
+    console.warn(str)
     if(remember)
         localStorage.setItem(authItemName, str)
     else
@@ -154,7 +78,7 @@ function login(username, password, remember, success, failure = defaultFailure){
     }, {
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
-        storeAccessToken(remember, data.token, data.expire)
+        storeAccessToken(data.token, remember,  data.expire)
         ElMessage.success(`登录成功，欢迎 ${data.username} 来到我们的系统`)
         success(data)
     }, failure)

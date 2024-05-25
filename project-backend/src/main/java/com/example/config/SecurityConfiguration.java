@@ -67,8 +67,8 @@ public class SecurityConfiguration {
                             .logoutSuccessHandler(this::onLogoutSuccess);
                 })
                 .exceptionHandling(conf -> conf
-                        .authenticationEntryPoint(this::onUnauthorized) //未登錄
                         .accessDeniedHandler(this::onAccessDenied) //Authority不足
+                        .authenticationEntryPoint(this::onUnauthorized) //未登錄
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(conf -> {
@@ -97,11 +97,16 @@ public class SecurityConfiguration {
         response.setHeader("Content-Type", "text/html;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         String authHeader = request.getHeader("Authorization");
-        if(utils.doInvalid(authHeader)) {
-            writer.write(RestBean.success().toJSONString());
-        } else {
-            writer.write(RestBean.fail(401, "退出失敗").toJSONString());
-        }
+        System.out.println("authHeader is " + authHeader + "!!!!!!!!!!");
+//        if(utils.doInvalid(authHeader)) {
+//            writer.write(RestBean.success().toJSONString());
+//        } else {
+//            writer.write(RestBean.fail(401, "退出失敗").toJSONString());
+//        }
+        /**
+         * 这里就先不弄token的检验了，
+         */
+        writer.write(RestBean.success(authHeader).toJSONString());
 
     }
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
@@ -116,11 +121,12 @@ public class SecurityConfiguration {
         User principal = (User)authentication.getPrincipal();
 
         Account account = service.findAccountByUsernameOrEmail(principal.getUsername());
-        String token = utils.generateToken(principal, 1, account.getUsername());
+        String token = utils.generateToken(principal, account.getId(), account.getUsername());
 
         AuthorizeVO  vo = new AuthorizeVO();
         vo.setUsername(account.getUsername());
         vo.setRole(account.getRole());
+        System.out.println("发出去的token" + token);
         vo.setToken(token);
         vo.setExpire(utils.expireTime());
         response.getWriter().write(RestBean.success(vo).toJSONString());

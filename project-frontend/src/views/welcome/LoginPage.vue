@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import {User, Lock} from '@element-plus/icons-vue'
+import {User, Lock} from "@element-plus/icons-vue"
 import router from "@/router";
 import {reactive, ref} from "vue";
 import {login} from '@/net'

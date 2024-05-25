@@ -6,7 +6,16 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/web_proj
   security:
     jwt:
-      key: 'ababssxxzyzybaba'
-      expire: 3
+      key: 'ababssxxzyz'
+      expire: 4
     filter:
       order: -100
+  mail:
+    host: smtp.163.com
+    username: springbootgood@163.com
+    password: QTDCNXAAMUFGKYCC
+  rabbitmq:
+    addresses: localhost
+    username: guest
+    password: guest
+    virtual-host: /
