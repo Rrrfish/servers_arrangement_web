@@ -1,9 +1,7 @@
 package com.example.entity;
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 
 public record RestBean<T>(int code, String msg, T data) {
     public static <T> RestBean<T> success(T data) {
@@ -20,6 +18,10 @@ public record RestBean<T>(int code, String msg, T data) {
     public static <T> RestBean<T> fail(String msg) {
         return new RestBean<>(401, msg, null);
     }
+    public static <T> RestBean<T> fail(int code, String msg) {
+        return new RestBean<>(401, msg, null);
+    }
+
     public String toJSONString() {
         return JSONObject.toJSONString(this, JSONWriter.Feature.WriteNulls); //處理NULL
     }
