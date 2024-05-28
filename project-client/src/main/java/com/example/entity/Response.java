@@ -1,17 +1,18 @@
-package com.example.utils;
+package com.example.entity;
 
 import com.alibaba.fastjson2.JSONObject;
 
 public record Response(int id, int code, Object data, String message) {
+
     public boolean success() {
         return code == 200;
     }
 
-    public JSONObject toJson() {
+    public JSONObject asJson() {
         return JSONObject.from(data);
     }
 
-    public String toString() {
+    public String asString() {
         return data.toString();
     }
 
@@ -19,3 +20,4 @@ public record Response(int id, int code, Object data, String message) {
         return new Response(0, 500, null, e.getMessage());
     }
 }
+

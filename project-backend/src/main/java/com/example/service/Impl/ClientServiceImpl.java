@@ -2,9 +2,15 @@ package com.example.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
+import com.example.entity.dto.ClientDetail;
+import com.example.entity.vo.request.ClientDetailVO;
+import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,6 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> implements ClientService {
     private String registerToken = generateToken();
 
+    @Resource
+    ClientDetailMapper detailMapper;
+
+    @Override
     public String registerToken() {
         return registerToken;
     }
@@ -58,6 +68,20 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     public Client getClientByToken(String token) {
         return clientTokenCache.get(token);
+    }
+
+    @Override
+    public void updateClientDetail(ClientDetailVO clientDetailVO, Client client) {
+        ClientDetail detail = new ClientDetail();
+        System.out.println(clientDetailVO);
+        BeanUtils.copyProperties(clientDetailVO, detail);
+        detail.setId(client.getId());
+        System.out.println(detail);
+        if(detailMapper.selectById(client.getId()) != null) {
+            detailMapper.updateById(detail);
+        } else {
+            detailMapper.insert(detail);
+        }
     }
 
     private int generateRandomId() {

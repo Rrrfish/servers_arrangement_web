@@ -35,7 +35,7 @@ public class JWTAuthorizeFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         String uri = request.getRequestURI();
 
-        if(uri.equals("/api/monitor")) {
+        if(uri.startsWith("/api/monitor")) {
             if(!uri.endsWith("/register")) {
                 Client client = service.getClientByToken(authorization);
                 if(client == null) {

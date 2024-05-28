@@ -2,9 +2,12 @@ package com.example.config;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.entity.ConnectionConfig;
+import com.example.utils.MonitorUtils;
 import com.example.utils.NetUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,9 +17,12 @@ import java.util.Scanner;
 
 @Slf4j
 @Configuration
-public class ServerConfiguration {
+public class ServerConfiguration implements ApplicationRunner {
     @Resource
     NetUtils net;
+
+    @Resource
+    MonitorUtils monitor;
 
     @Bean
     ConnectionConfig connectionConfig() {
@@ -25,6 +31,7 @@ public class ServerConfiguration {
         if(config == null) {
             config = registerToServer();
         }
+        System.out.println(monitor.monitorBaseDetail());
         return config;
     }
 
@@ -59,7 +66,7 @@ public class ServerConfiguration {
 
 
     private ConnectionConfig readConnectionConfigFile() {
-        File connectionConfigFile = new File("/config/server.json");
+        File connectionConfigFile = new File("config/server.json");
         if(connectionConfigFile.exists()) {
             System.out.println("存在配置文件");
             try(FileInputStream stream = new FileInputStream(connectionConfigFile)) {
@@ -70,5 +77,11 @@ public class ServerConfiguration {
             }
         }
         return null;
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("正在更新服务器基本信息...");
+        net.updateBaseDetails(monitor.monitorBaseDetail());
     }
 }
