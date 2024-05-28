@@ -1,0 +1,21 @@
+package com.example.utils;
+
+import com.alibaba.fastjson2.JSONObject;
+
+public record Response(int id, int code, Object data, String message) {
+    public boolean success() {
+        return code == 200;
+    }
+
+    public JSONObject toJson() {
+        return JSONObject.from(data);
+    }
+
+    public String toString() {
+        return data.toString();
+    }
+
+    public static Response errorResponse(Exception e) {
+        return new Response(0, 500, null, e.getMessage());
+    }
+}

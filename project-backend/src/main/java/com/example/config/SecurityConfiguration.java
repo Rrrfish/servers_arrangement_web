@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(conf -> {
 
                     conf.requestMatchers("/api/auth/**", "/error").permitAll()
+                            .requestMatchers("api/monitor/**").permitAll()  //给客户端放行
                             .anyRequest().authenticated();
                 })
                 .formLogin(conf -> {
