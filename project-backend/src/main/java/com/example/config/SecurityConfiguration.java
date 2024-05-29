@@ -7,6 +7,7 @@ import com.example.filter.JWTAuthorizeFilter;
 import com.example.filter.MyCorsFilter;
 import com.example.service.AccountService;
 import com.example.service.Impl.AccountServiceImpl;
+import com.example.utils.Config;
 import com.example.utils.JwtUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
@@ -54,7 +55,8 @@ public class SecurityConfiguration {
 
                     conf.requestMatchers("/api/auth/**", "/error").permitAll()
                             .requestMatchers("api/monitor/**").permitAll()  //给客户端放行
-                            .anyRequest().authenticated();
+//                            .anyRequest().authenticated();
+                            .anyRequest().hasAnyRole(Config.ROLE_ADMIN, Config.ROLE_NORMAL);
                 })
                 .formLogin(conf -> {
                     conf.loginProcessingUrl("/api/auth/login")

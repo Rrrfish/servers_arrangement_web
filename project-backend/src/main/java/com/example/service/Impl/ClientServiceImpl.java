@@ -5,6 +5,7 @@ import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
 import com.example.entity.vo.request.ClientDetailVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
@@ -14,10 +15,7 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -103,5 +101,19 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         return token;
     }
 
-
+    @Override
+    public List<ClientPreviewVO> listClients() {
+        return clientIdCache.values().stream().map(client -> {
+            ClientPreviewVO clientPreviewVO = client.asViewObject(ClientPreviewVO.class);
+            BeanUtils.copyProperties(detailMapper.selectById(clientPreviewVO.getId()), clientPreviewVO);
+            RuntimeDetailVO runtimeDetailVO = currentRuntime.get(clientPreviewVO.getId());
+            if(runtimeDetailVO != null &&
+                    (System.currentTimeMillis() - runtimeDetailVO.getTimestamp()< 60 *1000) ) {
+                //一分钟内是否有上报动态数据，如果没有看作是断联了
+                BeanUtils.copyProperties(runtimeDetailVO, clientPreviewVO);
+                clientPreviewVO.setOnline(true);   //在线！
+            }
+            return clientPreviewVO;
+        }).toList();
+    }
 }

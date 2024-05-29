@@ -9,4 +9,8 @@ public class Config {
 
     public final static String ALTER_USER_ID = "userId";
     public final static String ALTER_CLIENT = "client";
+
+    //用户角色
+    public final static String ROLE_ADMIN = "admin";
+    public final static String ROLE_NORMAL = "user";
 }
