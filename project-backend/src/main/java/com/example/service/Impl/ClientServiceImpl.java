@@ -7,6 +7,7 @@ import com.example.entity.dto.ClientDetail;
 import com.example.entity.vo.request.ClientDetailVO;
 import com.example.entity.vo.request.RenameClientVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
@@ -109,8 +110,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
             ClientPreviewVO clientPreviewVO = client.asViewObject(ClientPreviewVO.class);
             BeanUtils.copyProperties(detailMapper.selectById(clientPreviewVO.getId()), clientPreviewVO);
             RuntimeDetailVO runtimeDetailVO = currentRuntime.get(clientPreviewVO.getId());
-            if(runtimeDetailVO != null &&
-                    (System.currentTimeMillis() - runtimeDetailVO.getTimestamp()< 60 *1000) ) {
+            if(isOnline(runtimeDetailVO)) {
                 //一分钟内是否有上报动态数据，如果没有看作是断联了
                 BeanUtils.copyProperties(runtimeDetailVO, clientPreviewVO);
                 clientPreviewVO.setOnline(true);   //在线！
@@ -123,5 +123,17 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public void renameClient(RenameClientVO vo) {
         this.update(Wrappers.<Client>update().eq("id", vo.getId()).set("name", vo.getName()));
         initCache(); //更新缓存
+    }
+
+    @Override
+    public ClientDetailsVO clientDetails(int clientId) {
+        ClientDetailsVO vo = clientIdCache.get(clientId).asViewObject(ClientDetailsVO.class);
+        BeanUtils.copyProperties(detailMapper.selectById(clientId), vo);
+        vo.setOnline(isOnline(currentRuntime.get(clientId)));
+        return vo;
+    }
+
+    boolean isOnline(RuntimeDetailVO runtime) {
+        return runtime != null && (System.currentTimeMillis() - runtime.getTimestamp()) < 60*1000;
     }
 }

@@ -6,7 +6,7 @@ const props = defineProps({
   update: Function,
 })
 
-import {fitByUnit} from '@/tools'
+import {fitByUnit, percentageToStatus} from '@/tools'
 import {ElMessage, ElMessageBox} from "element-plus";
 import {post} from "@/net";
 
@@ -67,15 +67,15 @@ function rename() {
       <i class="fa-solid fa-microchip" style="margin-right: 5px"></i>
       <span style="margin-right: 10px">{{`${data.cpuCore} CPU`}}</span>
       <i class="fa-solid fa-memory" style="margin-right: 5px"></i>
-      <span>{{`${data.memory.toFixed(1)} GB`}}</span>
+      <span>{{`内存 ${data.memory.toFixed(1)} GB`}}</span>
     </div>
     <div class="progress">
       <span>{{`CPU: ${(data.cpuUsage*100).toFixed(1)}%`}}</span>
-      <el-progress status="success" :percentage="data.cpuUsage*100" :stroke-width="5" :show-text="false"/>
+      <el-progress :status="percentageToStatus((data.cpuUsage*100))" :percentage="data.cpuUsage*100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="progress">
       <span>Memory: <b>{{data.memoryUsage.toFixed(2)}}</b> GB</span>
-      <el-progress  status="success" :percentage="1.2/4*100" :stroke-width="5" :show-text="false"/>
+      <el-progress  :status="percentageToStatus(data.memoryUsage/data.memory*100)" :percentage="(data.memoryUsage/data.memory*100).toFixed(2)" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="network-flow">
       <div>网络流量</div>
@@ -91,23 +91,9 @@ function rename() {
 </template>
 
 <style scoped>
-:deep(.el-progress-bar__outer) {
-  background-color: #156b6b22;
-}
 
-:deep(.el-progress-bar__inner) {
-  background-color: #156b6b;
-}
 
-.interact-item {
-  transition: .3s;
 
-  &:hover {
-    cursor: pointer;
-    scale: 1.1;
-    opacity: 0.8;
-  }
-}
 
 .dark .instance-card {
   color: #d9d9d9;
@@ -120,6 +106,11 @@ function rename() {
   border-radius: 5px;
   box-sizing: border-box;
   color: #2d2c2c;
+
+  &:hover {
+    cursor: pointer;
+    scale: 1.01;
+  }
 
   .name {
     font-size: 15px;
