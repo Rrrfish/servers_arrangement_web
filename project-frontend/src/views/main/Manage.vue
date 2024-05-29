@@ -1,6 +1,15 @@
 <script setup>
 
 import PreviewCard from "@/component/PreviewCard.vue";
+import {ref} from "vue";
+import {get} from "@/net";
+const list = ref([])
+const updateList = () => get('/api/frontend-monitor/list', data => {
+  list.value = data
+  console.info(data)
+})
+setInterval(updateList, 10000)
+updateList()
 </script>
 
 <template>

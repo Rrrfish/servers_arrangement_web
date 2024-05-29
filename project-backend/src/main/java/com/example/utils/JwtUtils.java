@@ -76,9 +76,12 @@ public class JwtUtils {
 
     public UserDetails toUserDetails(DecodedJWT decodedJWT) {
         Map<String, Claim> claims = decodedJWT.getClaims();
+        System.out.println(claims);
         return User
-                .withUsername(claims.get("username").toString())
-                .password(claims.get("password").toString())
+                .withUsername(claims.get("name").toString())
+//                .withUsername(claims.get("username").toString())
+//                .password(claims.get("password").toString())
+                .password("******")
                 .authorities(claims.get("authorities").asArray(String.class))
                 .build();
     }

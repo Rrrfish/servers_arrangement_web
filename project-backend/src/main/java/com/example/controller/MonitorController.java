@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/monitor")
+@RequestMapping("/api/frontend-monitor")
 public class MonitorController {
     @Resource
     ClientService service;

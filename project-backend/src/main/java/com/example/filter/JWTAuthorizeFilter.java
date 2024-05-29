@@ -49,6 +49,7 @@ public class JWTAuthorizeFilter extends OncePerRequestFilter {
             }
         } else {
             DecodedJWT jwt = utils.decode(authorization);
+            System.out.println(jwt);
             if( jwt != null ) {
                 UserDetails user = utils.toUserDetails(jwt);
                 UsernamePasswordAuthenticationToken authentication =

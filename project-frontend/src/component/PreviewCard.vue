@@ -1,5 +1,7 @@
 <script setup>
-
+const props = defineProps({
+  data: Object
+})
 </script>
 
 <template>
@@ -7,23 +9,30 @@
     <div style="display: flex;justify-content: space-between">
       <div>
         <div class="name">
-          <span class="flag-icon flag-icon-cn"></span>
-          <span style="margin: 0 5px">xxx后端服务器</span>
+          <span :class="`flag-icon flag-icon-${data.location}`"></span>
+          <span style="margin: 0 5px">{{data.name}}</span>
           <i class="fa-solid fa-pen-to-square"></i>
         </div>
         <div class="os">
-          os: Ubuntu 22.04
+          os: {{`${data.osName} ${data.osVersion}`}}
         </div>
       </div>
-      <div class="status">
+      <div class="status" v-if="data.online">
         <span style="margin: 0 5px">运行中</span>
         <i style="color: #156b6b" class="fa-solid fa-play"></i>
+      </div>
+      <div class="status" v-else>
+        <span style="margin: 0 5px; color: #a10501">离线</span>
+        <i class="fa-solid fa-earth-europe"></i>
       </div>
     </div>
     <el-divider style="margin: 10px 0"/>
     <div class="network" >
-      <span style="margin-right: 10px">公网IP：192.168.0.11</span>
+      <span style="margin-right: 10px">公网IP：{{data.ip}}</span>
       <i class="fa-solid fa-copy" style="color: cornflowerblue"></i>
+    </div>
+    <div class="cpu">
+      <span style="margin-right: 10px">处理器：{{data.cpuName}}</span>
     </div>
     <div class="hardware">
       <i class="fa-solid fa-microchip" style="margin-right: 5px"></i>
@@ -89,6 +98,10 @@
   }
 
   .network {
+    font-size: 13px;
+  }
+
+  .cpu {
     font-size: 13px;
   }
 
