@@ -1,0 +1,112 @@
+<script setup>
+
+</script>
+
+<template>
+  <div class="instance-card">
+    <div style="display: flex;justify-content: space-between">
+      <div>
+        <div class="name">
+          <span class="flag-icon flag-icon-cn"></span>
+          <span style="margin: 0 5px">xxx后端服务器</span>
+          <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <div class="os">
+          os: Ubuntu 22.04
+        </div>
+      </div>
+      <div class="status">
+        <span style="margin: 0 5px">运行中</span>
+        <i style="color: #156b6b" class="fa-solid fa-play"></i>
+      </div>
+    </div>
+    <el-divider style="margin: 10px 0"/>
+    <div class="network" >
+      <span style="margin-right: 10px">公网IP：192.168.0.11</span>
+      <i class="fa-solid fa-copy" style="color: cornflowerblue"></i>
+    </div>
+    <div class="hardware">
+      <i class="fa-solid fa-microchip" style="margin-right: 5px"></i>
+      <span style="margin-right: 10px">2 CPU</span>
+      <i class="fa-solid fa-memory" style="margin-right: 5px"></i>
+      <span>4 GB</span>
+    </div>
+    <div class="progress">
+      <span>CPU: 2.5%</span>
+      <el-progress status="success" :percentage="2.5" :stroke-width="5" :show-text="false"/>
+    </div>
+    <div class="progress">
+      <span>Memory: <b>1.2</b> GB</span>
+      <el-progress  status="success" :percentage="1.2/4*100" :stroke-width="5" :show-text="false"/>
+    </div>
+    <div class="network-flow">
+      <div>网络流量</div>
+      <div>
+        <i class="fa-solid fa-upload" style="margin-right: 5px"></i>
+        <span>52 KB/s</span>
+        <el-divider direction="vertical"/>
+        <i class="fa-solid fa-download" style="margin-right: 5px"></i>
+        <span>64 KB/s</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+:deep(.el-progress-bar__outer) {
+  background-color: #156b6b22;
+}
+
+:deep(.el-progress-bar__inner) {
+  background-color: #156b6b;
+}
+
+
+.dark .instance-card {
+  color: #d9d9d9;
+}
+
+.instance-card {
+  width: 320px;
+  padding: 15px;
+  background-color: var(--el-bg-color);
+  border-radius: 5px;
+  box-sizing: border-box;
+  color: #2d2c2c;
+
+  .name {
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .status {
+    font-size: 14px;
+  }
+
+  .os {
+    font-size: 13px;
+    color: gray;
+  }
+
+  .network {
+    font-size: 13px;
+  }
+
+  .hardware {
+    font-size: 13px;
+  }
+
+  .progress {
+    margin: 10px 0 ;
+    font-size: 12px;
+  }
+
+  .network-flow {
+    margin-top: 10px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+
+  }
+}
+</style>
