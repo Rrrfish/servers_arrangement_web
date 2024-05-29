@@ -2,6 +2,8 @@
 const props = defineProps({
   data: Object
 })
+
+import {fitByUnit} from '@/tools'
 </script>
 
 <template>
@@ -36,26 +38,26 @@ const props = defineProps({
     </div>
     <div class="hardware">
       <i class="fa-solid fa-microchip" style="margin-right: 5px"></i>
-      <span style="margin-right: 10px">2 CPU</span>
+      <span style="margin-right: 10px">{{`${data.cpuCore} CPU`}}</span>
       <i class="fa-solid fa-memory" style="margin-right: 5px"></i>
-      <span>4 GB</span>
+      <span>{{`${data.memory.toFixed(1)} GB`}}</span>
     </div>
     <div class="progress">
-      <span>CPU: 2.5%</span>
-      <el-progress status="success" :percentage="2.5" :stroke-width="5" :show-text="false"/>
+      <span>{{`CPU: ${(data.cpuUsage*100).toFixed(1)}%`}}</span>
+      <el-progress status="success" :percentage="data.cpuUsage*100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="progress">
-      <span>Memory: <b>1.2</b> GB</span>
+      <span>Memory: <b>{{data.memoryUsage.toFixed(2)}}</b> GB</span>
       <el-progress  status="success" :percentage="1.2/4*100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="network-flow">
       <div>网络流量</div>
       <div>
         <i class="fa-solid fa-upload" style="margin-right: 5px"></i>
-        <span>52 KB/s</span>
+        <span>{{`${fitByUnit(data.networkUpload, 'KB')}`}}/s</span>
         <el-divider direction="vertical"/>
         <i class="fa-solid fa-download" style="margin-right: 5px"></i>
-        <span>64 KB/s</span>
+        <span>{{`${fitByUnit(data.networkDownload, 'KB')}`}}/s</span>
       </div>
     </div>
   </div>

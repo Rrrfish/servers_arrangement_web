@@ -23,9 +23,7 @@ updateList()
     <el-divider style="margin: 10px 0">
     </el-divider>
     <div class="card-list">
-      <preview-card/>
-      <preview-card/>
-      <preview-card/>
+      <preview-card v-for="item in list" :data="item"/>
     </div>
   </div>
 </template>
