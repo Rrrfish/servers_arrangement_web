@@ -15,7 +15,7 @@ import java.util.Date;
 public class Client implements BaseData {
     @TableId
     Integer id;
-    String username;
+    String name;
     String token;
     String location;
     String node;
