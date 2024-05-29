@@ -1,12 +1,13 @@
 <script setup>
-defineProps({
+defineProps( {
   name: String,
-  active: Boolean
+  active: Boolean,
 })
+
 </script>
 
 <template>
-  <div :class="`tab-item ${active ? 'active' : ''}`">
+  <div :class="`tab-item ${active?'active':''}`" >
     {{name}}
   </div>
 </template>
@@ -25,9 +26,10 @@ defineProps({
     cursor: pointer;
     color: var(--el-color-primary);
   }
-}
 
+}
 .active {
   border-bottom: solid 2px var(--el-color-primary);
 }
+
 </style>

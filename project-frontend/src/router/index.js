@@ -14,6 +14,10 @@ const router = createRouter({
                     name: 'welcome-login',
                     component: () => import('@/views/welcome/LoginPage.vue')
                 }, {
+                    path: 'register',
+                    name: 'welcome-register',
+                    component: () => import('@/views/welcome/RegisterPage.vue')
+                }, {
                     path: 'forget',
                     name: 'welcome-forget',
                     component: () => import('@/views/welcome/ForgetPage.vue')
@@ -22,18 +26,7 @@ const router = createRouter({
         }, {
             path: '/index',
             name: 'index',
-            component: () => import('@/views/IndexView.vue'),
-            children: [
-                {
-                    path: '',
-                    name: 'manage',
-                    component: () => import('@/views/main/Manage.vue')
-                }, {
-                    path: 'security',
-                    name: 'security',
-                    component: () => import('@/views/main/Security.vue')
-                }
-            ]
+            component: () => import("@/views/IndexView.vue"),
         }
     ]
 })
