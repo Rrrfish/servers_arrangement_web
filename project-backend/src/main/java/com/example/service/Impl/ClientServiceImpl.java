@@ -89,6 +89,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     public void updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client) {
         currentRuntime.put(client.getId(), runtimeDetailVO);
+        System.out.println(runtimeDetailVO);
     }
 
     private int generateRandomId() {

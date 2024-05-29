@@ -125,6 +125,8 @@ public class MonitorUtils {
         } catch (IOException e) {
             log.error("读取网络接口信息时出错", e);
         }
-        return null;
+        return hardware.getNetworkIFs().get(0);
     }
+
+
 }

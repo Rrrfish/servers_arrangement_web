@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.example.entity.BaseDetail;
 import com.example.entity.ConnectionConfig;
 import com.example.entity.Response;
+import com.example.entity.RuntimeDetail;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -71,12 +72,12 @@ public class NetUtils {
                     .header("Content-Type", "application/json")  //不加这个会报错
                     .build();
             log.info("Sending POST request to URL: " + config.getAddress() + "/api/monitor" + url + " with data: " + rawData);
-            System.out.println("hehhhhhhhhhhh");
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if(response == null) System.out.println("response is null");
-            else log.info("Received POST response: " + response.body());
+//            if(response == null) System.out.println("response is null");
+//            else log.info("Received POST response: " + response.body());
             Response response1 = JSONObject.parseObject(response.body()).to(Response.class);
-            System.out.println(response1);
+//            System.out.println(response1);
             return response1;
         } catch (IOException | InterruptedException | URISyntaxException e) {
             log.error("请求失败", e);
@@ -84,6 +85,15 @@ public class NetUtils {
         } catch (Exception e) {
             log.error("未预期的错误", e);
             return Response.errorResponse(e);
+        }
+    }
+
+    public void updateRuntimeDetails(RuntimeDetail detail) {
+        Response response = doPost("/runtime", detail);
+        if(response.success()) {
+            log.info("更新运行数据");
+        } else{
+            log.error("运行数据更新失败： {}", response.message());
         }
     }
 
