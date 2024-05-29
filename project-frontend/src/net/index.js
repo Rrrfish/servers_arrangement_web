@@ -1,7 +1,6 @@
-
-
 import axios from "axios";
 import {ElMessage} from "element-plus";
+import {useStore} from "@/store";
 
 const authItemName = "authorize"
 
@@ -23,7 +22,6 @@ const defaultFailure = (message, status, url) => {
 
 function takeAccessToken() {
     const str = localStorage.getItem(authItemName) || sessionStorage.getItem(authItemName);
-    console.warn(str)
     if(!str) return null
     const authObj = JSON.parse(str)
     if(new Date(authObj.expire) <= new Date()) {
@@ -34,14 +32,12 @@ function takeAccessToken() {
     return authObj.token
 }
 
-function storeAccessToken(token,remember,  expire){
+function storeAccessToken(remember, token, expire){
     const authObj = {
         token: token,
         expire: expire
     }
     const str = JSON.stringify(authObj)
-    console.warn("要保存的token")
-    console.warn(str)
     if(remember)
         localStorage.setItem(authItemName, str)
     else
@@ -78,7 +74,11 @@ function login(username, password, remember, success, failure = defaultFailure){
     }, {
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
-        storeAccessToken(data.token, remember,  data.expire)
+        storeAccessToken(remember, data.token, data.expire)
+        const store = useStore()
+        store.user.role = data.role
+        store.user.username = data.username
+        store.user.email = data.email
         ElMessage.success(`登录成功，欢迎 ${data.username} 来到我们的系统`)
         success(data)
     }, failure)

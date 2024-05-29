@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router'
 import { unauthorized } from "@/net";
 
 const router = createRouter({
@@ -6,7 +6,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: "welcome",
+            name: 'welcome',
             component: () => import('@/views/WelcomeView.vue'),
             children: [
                 {
@@ -14,15 +14,26 @@ const router = createRouter({
                     name: 'welcome-login',
                     component: () => import('@/views/welcome/LoginPage.vue')
                 }, {
-                    path: 'register',
-                    name: 'welcome-register',
-                    component: () => import('@/views/welcome/RegisterPage.vue')
-                },
+                    path: 'forget',
+                    name: 'welcome-forget',
+                    component: () => import('@/views/welcome/ForgetPage.vue')
+                }
             ]
         }, {
             path: '/index',
             name: 'index',
-            component: () => import("@/views/IndexView.vue")
+            component: () => import('@/views/IndexView.vue'),
+            children: [
+                {
+                    path: '',
+                    name: 'manage',
+                    component: () => import('@/views/main/Manage.vue')
+                }, {
+                    path: 'security',
+                    name: 'security',
+                    component: () => import('@/views/main/Security.vue')
+                }
+            ]
         }
     ]
 })
@@ -38,4 +49,4 @@ router.beforeEach((to, from, next) => {
     }
 })
 
-export default router //暴露出去
+export default router
