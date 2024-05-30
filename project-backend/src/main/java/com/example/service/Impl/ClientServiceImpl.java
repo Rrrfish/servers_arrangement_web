@@ -6,13 +6,15 @@ import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
 import com.example.entity.vo.request.ClientDetailVO;
 import com.example.entity.vo.request.RenameClientVO;
+import com.example.entity.vo.request.RenameNodeVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
+import com.example.entity.vo.response.RuntimeHistoryVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
-import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.example.utils.InfluxDbUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +29,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Resource
     ClientDetailMapper detailMapper;
+
+    @Resource
+    InfluxDbUtils influx;
 
     @Override
     public String registerToken() {
@@ -91,6 +96,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public void updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client) {
         currentRuntime.put(client.getId(), runtimeDetailVO);
         System.out.println(runtimeDetailVO);
+        influx.writeRuntimeData(client.getId(), runtimeDetailVO);
     }
 
     private int generateRandomId() {
@@ -133,7 +139,27 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         return vo;
     }
 
+    @Override
+    public void renameNode(RenameNodeVO vo) {
+        this.update(Wrappers.<Client>update().eq("id", vo.getId())
+                .set("location", vo.getLocation()).set("node", vo.getNode()));
+        initCache();
+    }
+
     boolean isOnline(RuntimeDetailVO runtime) {
         return runtime != null && (System.currentTimeMillis() - runtime.getTimestamp()) < 60*1000;
+    }
+
+    @Override
+    public RuntimeHistoryVO runtimeDetailsHistory(int clientId) {
+        RuntimeHistoryVO history = influx.readRuntimeData(clientId);
+        RuntimeDetailVO detail = currentRuntime.get(clientId);
+        BeanUtils.copyProperties(history, detail);
+        return history;
+    }
+
+    @Override
+    public RuntimeDetailVO runtimeDetailNow(int clientId) {
+        return currentRuntime.get(clientId);
     }
 }
