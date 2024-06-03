@@ -20,7 +20,7 @@ public class MonitorJobBean implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         RuntimeDetail detail = monitor.monitorRuntimeDetail();
-        System.out.println(detail);
+//        System.out.println(detail);
         net.updateRuntimeDetails(detail);
     }
 }

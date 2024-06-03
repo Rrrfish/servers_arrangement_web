@@ -54,7 +54,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(conf -> {
 
                     conf.requestMatchers("/api/auth/**", "/error").permitAll()
-                            .requestMatchers("api/monitor/**").permitAll()  //给客户端放行
+                            .requestMatchers("/api/monitor/**").permitAll()  //给客户端放行
+                            .requestMatchers("/api/user/**").permitAll()
+//                            .requestMatchers("http://169/254.207.214:8080/**").permitAll()
 //                            .anyRequest().authenticated();
                             .anyRequest().hasAnyRole(Config.ROLE_ADMIN, Config.ROLE_NORMAL);
                 })

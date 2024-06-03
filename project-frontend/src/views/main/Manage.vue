@@ -4,10 +4,19 @@ import PreviewCard from "@/component/PreviewCard.vue";
 import {reactive, ref} from "vue";
 import {get} from "@/net";
 import ClientDetails from "@/component/ClientDetails.vue";
+import RegisterCard from "@/component/RegisterCard.vue";
+import {Plus} from "@element-plus/icons-vue";
+import {useRoute} from "vue-router";
 const list = ref([])
-const updateList = () => get('/api/frontend-monitor/list', data => {
-  list.value = data
-})
+const route = useRoute()
+
+const updateList = () => {
+  if(route.name === 'manage') {
+    get('/api/frontend-monitor/list', data => {
+      list.value = data
+    })
+  }
+}
 setInterval(updateList, 10000)
 updateList()
 
@@ -20,16 +29,34 @@ const displayClientDetails = (id) => {
   detail.show = true
   detail.id = id
 }
+
+const register = reactive({
+  show: false,
+  token: ''
+})
+
+const refreshToken = () => get('api/frontend-monitor/register', code => register.token = code)
+
+
+
 </script>
 
 <template>
   <div class="manage-main">
-    <div class="title"><i class="fa-solid fa-server"></i>
-      管理主机列表
+    <div style="display: flex; justify-content: space-between; align-items: end">
+      <div>
+        <div class="title"><i class="fa-solid fa-server"></i>
+          管理主机列表
+        </div>
+        <div class="desc">
+          管理已注册服务器，实时监控服务器状态并管理
+        </div>
+      </div>
+      <div>
+        <el-button :icon="Plus" plain @click="register.show=true">添加新主机</el-button>
+      </div>
     </div>
-    <div class="desc">
-      管理已注册服务器，实时监控服务器状态并管理
-    </div>
+
     <el-divider style="margin: 10px 0">
     </el-divider>
     <div class="card-list">
@@ -38,7 +65,11 @@ const displayClientDetails = (id) => {
     </div>
     <el-drawer size="520" :show-close="false" v-model="detail.show"
                :with-header="false" v-if="list.length" @close="detail.id = -1">
-      <client-details :id="detail.id" :update="updateList"/>
+      <client-details :id="detail.id" :update="updateList" @delete="updateList"/>
+    </el-drawer>
+    <el-drawer v-model="register.show" direction="ltr" style="width: 600px; margin-left: 15px"
+      @open="refreshToken">
+      <register-card :token="register.token"/>
     </el-drawer>
   </div>
 </template>

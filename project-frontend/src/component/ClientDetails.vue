@@ -4,6 +4,7 @@ import {get, post} from "@/net";
 import {useClipboard} from "@vueuse/core";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {fitByUnit, percentageToStatus} from "@/tools";
+import {Delete} from "@element-plus/icons-vue";
 
 const locations = [
   {name: 'cn', desc: '中国大陆'},
@@ -35,6 +36,23 @@ const enableEditNode = () => {
   details.editNode = true
   nodeEdit.name = details.base.node
   nodeEdit.locations = details.base.location
+}
+
+const emits = defineEmits(['delete']) //通知外面
+
+function deleteClient() {
+  ElMessageBox.confirm("删除后，所有统计数据都将消失，您确定要这样做吗？",
+    "删除主机", {
+    confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+  }).then(() => {
+    get(`api/frontend-monitor/delete?clientId=${props.id}`, () => {
+      emits("delete")
+      props.update()
+      ElMessage.success("服务器删除成功")
+    })
+  }).catch()
 }
 
 function updateDetails() {
@@ -88,10 +106,13 @@ const now = computed(() => details.runtime.list[details.runtime.list.length -1 ]
 
 <template>
   <div class="client-details" v-loading="Object.keys(details.base).length === 0">
-    <div v-if="Object.keys(details.base).length">
-      <div class="title">
-        <i class="fa-solid fa-server"></i>
+    <div v-if="Object.keys(details.base).length" >
+      <div style="display: flex; justify-content: space-between" >
+        <div class="title">
+          <i class="fa-solid fa-server"></i>
           服务器信息
+        </div>
+        <el-button :icon="Delete" type="danger" text @click="deleteClient">删除此主机</el-button>
       </div>
       <el-divider style="margin: 10px 0"/>
       <div class="details-list">

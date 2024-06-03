@@ -33,22 +33,22 @@ public class JwtUtils {
     StringRedisTemplate stringRedisTemplate;
 
     public boolean doInvalid(String headToken) { //讓jwt token失效
-        System.out.println("token is ? " + headToken);
+        //System.out.println("token is ? " + headToken);
         String token = truncToken(headToken);
-        System.out.println("处理之后token为" + token);
+        //System.out.println("处理之后token为" + token);
         if(token == null) {
             return false;
         }
         Algorithm algorithm = Algorithm.HMAC256(key);
         JWTVerifier verifier = JWT.require(algorithm).build(); //decode
-        System.out.println("jwrVerifier is " + verifier);
+        //System.out.println("jwrVerifier is " + verifier);
         try {
             DecodedJWT jwt = verifier.verify(token);
             String id = jwt.getId();
-            System.out.println("decode之后的id is " + id);
+//            System.out.println("decode之后的id is " + id);
             return deleteToken(id, jwt.getExpiresAt());
         } catch (JWTVerificationException e) {
-            System.out.println("出现了JWTVerificationException");
+//            System.out.println("出现了JWTVerificationException");
             e.printStackTrace(); // 打印堆栈跟踪以获取更多信息
             return false;
         }

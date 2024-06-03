@@ -26,7 +26,7 @@ public class ClientController {
     @PostMapping("/detail")
     public RestBean<Void> updateClientDetails(@RequestAttribute(Config.ALTER_CLIENT) Client client,
                                               @RequestBody @Valid ClientDetailVO clientDetailVO) {
-        System.out.println(clientDetailVO);
+//        System.out.println(clientDetailVO);
         service.updateClientDetail( clientDetailVO, client);
         return RestBean.success();
     }
@@ -37,4 +37,5 @@ public class ClientController {
         service.updateRuntimeDetail(runtimeDetailVO, client);
         return RestBean.success();
     }
+
 }

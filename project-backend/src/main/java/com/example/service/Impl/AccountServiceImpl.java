@@ -3,6 +3,7 @@ package com.example.service.Impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Account;
+import com.example.entity.vo.request.ChangePasswordVO;
 import com.example.entity.vo.request.EmailRegisterVO;
 import com.example.mapper.AccountMapper;
 import com.example.service.AccountService;
@@ -39,13 +40,31 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     PasswordEncoder passwordEncoder;
 
     @Override
+    public boolean changePassword(ChangePasswordVO vo, int userId) {
+        String oldPassword = vo.getPassword();
+        String newPassword = vo.getNew_password();
+        Account account = getById(userId);
+
+        String pw = account.getPassword();
+        if(pw== null) System.out.println("原来密码获取失败");
+        if(oldPassword == null) System.out.println("传参 oldpassword失败");
+        if( !passwordEncoder.matches(oldPassword, pw)) {
+            return false;
+        }
+
+        this.update(Wrappers.<Account>update().eq("id", userId)
+            .set("password", passwordEncoder.encode(newPassword)));
+        return true;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = this.findAccountByUsernameOrEmail(username);
         if (account == null) {
-            System.out.println("User not found: " + username);
+//            System.out.println("User not found: " + username);
             throw new UsernameNotFoundException("用戶不存在");
         }
-        System.out.println("????????????????/");
+//        System.out.println("????????????????/");
         return User
                 .withUsername(username)
                 .password(account.getPassword())

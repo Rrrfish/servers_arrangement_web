@@ -80,10 +80,10 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     public void updateClientDetail(ClientDetailVO clientDetailVO, Client client) {
         ClientDetail detail = new ClientDetail();
-        System.out.println(clientDetailVO);
+//        System.out.println(clientDetailVO);
         BeanUtils.copyProperties(clientDetailVO, detail);
         detail.setId(client.getId());
-        System.out.println(detail);
+//        System.out.println(detail);
         if(detailMapper.selectById(client.getId()) != null) {
             detailMapper.updateById(detail);
         } else {
@@ -95,7 +95,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     public void updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client) {
         currentRuntime.put(client.getId(), runtimeDetailVO);
-        System.out.println(runtimeDetailVO);
+//        System.out.println(runtimeDetailVO);
         influx.writeRuntimeData(client.getId(), runtimeDetailVO);
     }
 
@@ -106,7 +106,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public static String generateToken()
     {
         String token = UUID.randomUUID().toString().replace("-", "");
-        System.out.println(token);
+//        System.out.println(token);
         return token;
     }
 
@@ -161,5 +161,14 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     public RuntimeDetailVO runtimeDetailNow(int clientId) {
         return currentRuntime.get(clientId);
+    }
+
+    @Override
+    public void deleteClient(int clientId) {
+        removeById(clientId);
+        detailMapper.deleteById(clientId);
+        clientTokenCache.remove(clientIdCache.get(clientId).getToken());
+        clientIdCache.remove(clientId);
+        currentRuntime.remove(clientId);
     }
 }
