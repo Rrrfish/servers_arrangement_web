@@ -7,6 +7,7 @@ import ClientDetails from "@/component/ClientDetails.vue";
 import RegisterCard from "@/component/RegisterCard.vue";
 import {Plus} from "@element-plus/icons-vue";
 import {useRoute} from "vue-router";
+import TerminalWindow from "@/component/TerminalWindow.vue";
 const list = ref([])
 const route = useRoute()
 
@@ -37,8 +38,16 @@ const register = reactive({
 
 const refreshToken = () => get('api/frontend-monitor/register', code => register.token = code)
 
+function openTerminal(id) {
+  terminal.show = true
+  terminal.id = id
+  detail.show = false  //把详情页面关了，不然太乱了
+}
 
-
+const terminal = reactive({
+  show: false,
+  token: -1
+})
 </script>
 
 <template>
@@ -65,11 +74,26 @@ const refreshToken = () => get('api/frontend-monitor/register', code => register
     </div>
     <el-drawer size="520" :show-close="false" v-model="detail.show"
                :with-header="false" v-if="list.length" @close="detail.id = -1">
-      <client-details :id="detail.id" :update="updateList" @delete="updateList"/>
+      <client-details :id="detail.id" :update="updateList" @delete="updateList"
+                      @terminal="openTerminal"/>
     </el-drawer>
     <el-drawer v-model="register.show" direction="ltr" style="width: 600px; margin-left: 15px"
       @open="refreshToken">
       <register-card :token="register.token"/>
+    </el-drawer>
+    <el-drawer style="width: 800px" :size="500" direction="ltr"
+               v-model="terminal.show" :close-on-click-modal="false">
+      <template #header>
+        <div>
+          <div style="font-size: 18px;color: dodgerblue;font-weight: bold;">SSH远程连接</div>
+          <div style="font-size: 14px">
+            远程连接的建立将由服务端完成
+          </div>
+        </div>
+      </template>
+      <terminal-window :id="terminal.id">
+
+      </terminal-window>
     </el-drawer>
   </div>
 </template>

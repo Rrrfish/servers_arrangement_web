@@ -4,15 +4,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
-import com.example.entity.vo.request.ClientDetailVO;
-import com.example.entity.vo.request.RenameClientVO;
-import com.example.entity.vo.request.RenameNodeVO;
-import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.dto.ClientSsh;
+import com.example.entity.vo.request.*;
 import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.entity.vo.response.RuntimeHistoryVO;
+import com.example.entity.vo.response.SshSettingsVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
+import com.example.mapper.ClientSshMapper;
 import com.example.service.ClientService;
 import com.example.utils.InfluxDbUtils;
 import jakarta.annotation.PostConstruct;
@@ -170,5 +170,40 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         clientTokenCache.remove(clientIdCache.get(clientId).getToken());
         clientIdCache.remove(clientId);
         currentRuntime.remove(clientId);
+    }
+
+    @Resource
+    ClientSshMapper sshMapper;
+
+    @Override
+    public SshSettingsVO sshSettings(int clientId) {
+        ClientDetail detail = detailMapper.selectById(clientId);
+        ClientSsh clientSsh = sshMapper.selectById(clientId);
+        SshSettingsVO vo = new SshSettingsVO();
+        if(clientSsh != null) {
+            vo = clientSsh.asViewObject(SshSettingsVO.class);
+        } else {
+            vo = new SshSettingsVO();
+        }
+
+        vo.setIp(detail.getIp());
+        return  vo;
+    }
+
+    @Override
+    public void saveClientSshConnection(SshConnectionVO vo) {
+        Client client = clientIdCache.get(vo.getId());
+        if(client == null) {
+            return;
+        }
+
+        ClientSsh ssh = new ClientSsh();
+        BeanUtils.copyProperties(vo, ssh);
+
+        if(Objects.nonNull(sshMapper.selectById(client.getId()))) {
+            sshMapper.updateById(ssh);
+        } else {
+            sshMapper.insert(ssh);
+        }
     }
 }

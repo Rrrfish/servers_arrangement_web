@@ -4,9 +4,12 @@ import com.example.entity.RestBean;
 import com.example.entity.vo.request.RenameClientVO;
 import com.example.entity.vo.request.RenameNodeVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.vo.request.SshConnectionVO;
 import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.entity.vo.response.RuntimeHistoryVO;
+import com.example.entity.vo.response.SshSettingsVO;
+import com.example.mapper.ClientSshMapper;
 import com.example.service.ClientService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -62,5 +65,17 @@ public class MonitorController {
     public RestBean<Void> deleteClient(int clientId) {
         service.deleteClient(clientId);
         return RestBean.success();
+    }
+
+
+    @PostMapping("/ssh-save")
+    public RestBean<Void> saveSshConnection(@RequestBody @Valid SshConnectionVO vo) {
+        service.saveClientSshConnection(vo);
+        return RestBean.success();
+    }
+
+    @GetMapping("/ssh")
+    public RestBean<SshSettingsVO> sshSettings(int clientId) {
+        return RestBean.success(service.sshSettings(clientId));
     }
 }

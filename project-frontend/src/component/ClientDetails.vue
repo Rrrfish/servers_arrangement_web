@@ -4,7 +4,7 @@ import {get, post} from "@/net";
 import {useClipboard} from "@vueuse/core";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {fitByUnit, percentageToStatus} from "@/tools";
-import {Delete} from "@element-plus/icons-vue";
+import {Connection, Delete} from "@element-plus/icons-vue";
 
 const locations = [
   {name: 'cn', desc: '中国大陆'},
@@ -38,7 +38,7 @@ const enableEditNode = () => {
   nodeEdit.locations = details.base.location
 }
 
-const emits = defineEmits(['delete']) //通知外面
+const emits = defineEmits(['delete', 'terminal']) //通知外面
 
 function deleteClient() {
   ElMessageBox.confirm("删除后，所有统计数据都将消失，您确定要这样做吗？",
@@ -112,7 +112,13 @@ const now = computed(() => details.runtime.list[details.runtime.list.length -1 ]
           <i class="fa-solid fa-server"></i>
           服务器信息
         </div>
-        <el-button :icon="Delete" type="danger" text @click="deleteClient">删除此主机</el-button>
+        <div>
+
+          <el-button :icon="Connection" type="success"
+                     @click="emits('terminal', id)" text>SSH远程连接</el-button>
+          <el-button :icon="Delete" type="danger" text @click="deleteClient"
+          style="margin-left: 0">删除此主机</el-button>
+        </div>
       </div>
       <el-divider style="margin: 10px 0"/>
       <div class="details-list">

@@ -76,7 +76,7 @@ public class JwtUtils {
 
     public UserDetails toUserDetails(DecodedJWT decodedJWT) {
         Map<String, Claim> claims = decodedJWT.getClaims();
-        System.out.println(claims);
+//        System.out.println(claims);
         return User
                 .withUsername(claims.get("name").toString())
 //                .withUsername(claims.get("username").toString())
