@@ -81,7 +81,7 @@ const terminal = reactive({
       @open="refreshToken">
       <register-card :token="register.token"/>
     </el-drawer>
-    <el-drawer style="width: 800px" :size="500" direction="ltr"
+    <el-drawer style="width: 800px" :size="500" direction="btt"
                v-model="terminal.show" :close-on-click-modal="false">
       <template #header>
         <div>
